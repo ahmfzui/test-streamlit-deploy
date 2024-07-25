@@ -111,7 +111,7 @@ def main():
     menu_selection = option_menu(
         menu_title=None,
         options=["Home", "Monitoring", "Controlling", "Object Detection"],
-        icons=["house", "clipboard-data-fill", "gear-wide-connected", "search"],
+        icons=["house-fill", "clipboard-data-fill", "gear-wide-connected", "search"],
         default_index=0,
         orientation="horizontal",
     )
@@ -206,7 +206,7 @@ def main():
         st.markdown("<hr/>", unsafe_allow_html=True)
 
         # Create tabs for controlling temperature and water motor
-        tab1, tab2 = st.tabs(["🌡️ Temperature Control", "💦 Water Motor Control"])
+        tab1, tab2 = st.tabs(["**🌡️ Temperature Control**", "**💦 Water Motor Control**"])
 
         # Center buttons
         st.markdown("""
@@ -218,7 +218,7 @@ def main():
         # Temperature Control tab
         with tab1:
             st.write("")
-            st.markdown("<h3 style='text-align: center;'>🌡️ Set Water Motor Timing</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='text-align: center;'>🌡️ Set Minimum and Maximum Temperature</h3>", unsafe_allow_html=True)
             st.write("")
 
             with st.form(key='temperature_form'):
@@ -250,31 +250,30 @@ def main():
                     # Return None if the format is incorrect
                     return None
 
-            # Form for motor settings
             with st.form(key='motor_form'):
-                # Text input for time
-                alarm_time_str = st.text_input('Jam Alarm', value=datetime.now().strftime('%H:%M'))
+                # Text input for pump schedule time
+                pump_schedule_str = st.text_input('Water Pump Schedule (HH : MM)', value=datetime.now().strftime('%H:%M'))
 
                 # Submit button
-                submit_button = st.form_submit_button(label='Save Motor Settings')
+                submit_button = st.form_submit_button(label='Save Pump Schedule')
 
                 if submit_button:
                     # Validate the time format
-                    alarm_time = validate_time(alarm_time_str)
-                    
-                    if alarm_time:
+                    pump_schedule = validate_time(pump_schedule_str)
+
+                    if pump_schedule:
                         # Convert the time to a string in HH:MM format
-                        alarm_time_str = alarm_time.strftime('%H:%M')
-                        
+                        pump_schedule_str = pump_schedule.strftime('%H:%M')
+
                         # Insert into the database
-                        inputJam.insert_one({'alarm_time': alarm_time_str})
-                        st.success('Water motor settings have been saved!')
+                        inputJam.insert_one({'pump_schedule': pump_schedule_str})
+                        st.success('Water pump schedule has been saved!')
                     else:
                         st.error('Invalid time format. Please use HH:MM.')
 
                 latest_jam_setting = inputJam.find().sort([('_id', -1)]).limit(1)
                 for setting in latest_jam_setting:
-                    st.write('Jam Alarm Terbaru:', setting.get('alarm_time', 'N/A'))
+                    st.write('Latest Pump Schedule:', setting.get('pump_schedule', 'N/A'))
 
     elif menu_selection == "Object Detection":
         st.markdown("<h1 style='text-align: center;'>Object Detection for Sawi Varieties</h1>", unsafe_allow_html=True)
@@ -284,7 +283,7 @@ def main():
         model = YOLO('trained_pakcoy.pt')
 
         # Create tabs
-        tab1, tab2 = st.tabs(["📷 Upload Image and Video", "📡 Real-time Object Detection"])
+        tab1, tab2 = st.tabs(["**📷 Upload Image and Video**", "**📡 Real-time Object Detection**"])
 
         with tab1:
             st.write("")
